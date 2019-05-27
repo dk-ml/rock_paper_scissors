@@ -1,6 +1,7 @@
 from random import sample
 from collections import Counter
 
+from numpy.random import choice
 from sklearn.linear_model import LogisticRegression
 
 from rps.game import Move
@@ -42,6 +43,23 @@ class RandomPlayer(Player):
         return sample(population=cls.MOVES, k=1)[0]
 
 
+class AlmostHumanPlayer(Player):
+    MOVES = [Move.ROCK, Move.PAPER, Move.SCISSORS]
+    WEIGHT_BY_MOVES = {
+        Move.ROCK: [0.1, 0.8, 0.1],
+        Move.PAPER: [0.1, 0.1, 0.8],
+        Move.SCISSORS: [0.8, 0.1, 0.1],
+    }
+
+    def get_move(self):
+        if not self.game_history:
+            return RandomPlayer().get_move()
+        opponent_last_move = self.game_history[-1][1]
+        return choice(a=self.MOVES, size=1, p=self.WEIGHT_BY_MOVES[opponent_last_move])[
+            0
+        ]
+
+
 class AIPlayer(Player):
     MOVE_BY_NUM = {0: Move.PAPER, 1: Move.SCISSORS, 2: Move.ROCK}
     NUM_BY_MOVE = {v: k for k, v in MOVE_BY_NUM.items()}
@@ -76,7 +94,7 @@ class AIPlayer(Player):
 
     def _get_X_pred(self):
         opponent_moves = [m for _, m in self.game_history]
-        sub_history = opponent_moves[-self.WINDOW_SIZE:]
+        sub_history = opponent_moves[-self.WINDOW_SIZE :]
         features = self._get_features(history=sub_history)
         return [features]
 
