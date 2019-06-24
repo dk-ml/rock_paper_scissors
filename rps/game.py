@@ -17,11 +17,14 @@ class Game:
 
     def play(self, n_rounds=1):
         for _ in range(n_rounds):
-            self._inform_players()
-            round_ = Round(self.player1, self.player2)
-            round_.play()
-            self.history.append(round_.get_moves())
-            self.winners.append(round_.get_winner())
+            self.play_round()
+
+    def play_round(self):
+        self._inform_players()
+        round_ = Round(self.player1, self.player2)
+        round_.play()
+        self.history.append(round_.get_moves())
+        self.winners.append(round_.get_winner())
 
     def _inform_players(self):
         self.player1.update(game_history=self.history)
