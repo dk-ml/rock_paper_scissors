@@ -104,3 +104,24 @@ class AIPlayer(Player):
         prop_scissors = counter[Move.SCISSORS] / len(history)
         prop_papers = counter[Move.PAPER] / len(history)
         return [prop_rocks, prop_scissors, prop_papers]
+
+
+class ForcedPlayer(Player):
+
+    def __init__(self):
+        super().__init__()
+        self._next_move = None
+
+    @property
+    def next_move(self):
+        return self._next_move
+
+    @next_move.setter
+    def next_move(self, move):
+        self._next_move = move
+
+    def get_move(self):
+        if not self._next_move:
+            raise Exception('next_move has not been set')
+        next_move, self._next_move = self._next_move, None
+        return next_move
